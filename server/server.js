@@ -2096,6 +2096,140 @@ app.post('/api/ai/chat', async (req, res) => {
   }
 })
 
+// ==================== 管理后台统计 API ====================
+
+app.get('/api/admin/overview', async (req, res) => {
+  try {
+    await db.read()
+    const users = db.data.users || []
+    const cultures = db.data.cultures || []
+    const products = db.data.products || []
+    const orders = db.data.orders || []
+    const posts = db.data.posts || []
+    const feedbacks = db.data.feedbacks || []
+    const activities = db.data.activities || []
+
+    res.json({
+      code: 200,
+      data: {
+        userCount: users.length,
+        cultureCount: cultures.length,
+        productCount: products.length,
+        orderCount: orders.length,
+        postCount: posts.length,
+        feedbackCount: feedbacks.length,
+        activityCount: activities.length,
+        totalRevenue: orders
+          .filter(o => o.status === 'paid' || o.status === 'completed')
+          .reduce((sum, o) => sum + (o.totalAmount || 0), 0)
+      }
+    })
+  } catch (error) {
+    console.error('获取概览数据错误:', error)
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/admin/users/statistics', async (req, res) => {
+  try {
+    await db.read()
+    const users = db.data.users || []
+    let admins = 0, normalUsers = 0
+    users.forEach(u => {
+      if (u.role === 'admin') admins++
+      else normalUsers++
+    })
+    res.json({
+      code: 200,
+      data: { totalUsers: users.length, admins, normalUsers }
+    })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/admin/orders/statistics', async (req, res) => {
+  try {
+    await db.read()
+    const orders = db.data.orders || []
+    let pending = 0, paid = 0, completed = 0, cancelled = 0, totalAmount = 0
+    orders.forEach(o => {
+      totalAmount += o.totalAmount || 0
+      switch (o.status) {
+        case 'pending': pending++; break
+        case 'paid': paid++; break
+        case 'completed': completed++; break
+        case 'cancelled': cancelled++; break
+      }
+    })
+    res.json({
+      code: 200,
+      data: { totalOrders: orders.length, totalAmount, pending, paid, completed, cancelled }
+    })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/admin/products/statistics', async (req, res) => {
+  try {
+    await db.read()
+    const products = db.data.products || []
+    const categoryCount = {}
+    let totalSales = 0, totalStock = 0
+    products.forEach(p => {
+      totalSales += p.sales || 0
+      totalStock += p.stock || 0
+      const cat = p.category || '未分类'
+      categoryCount[cat] = (categoryCount[cat] || 0) + 1
+    })
+    res.json({
+      code: 200,
+      data: { totalProducts: products.length, totalSales, totalStock, categoryCount }
+    })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/admin/orders/recent', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10
+    await db.read()
+    const orders = [...(db.data.orders || [])]
+      .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+      .slice(0, limit)
+      .map(o => {
+        const buyer = db.data.users.find(u => u.id === o.userId)
+        return {
+          id: o.id,
+          orderNo: o.orderNo,
+          buyerName: buyer?.nickname || buyer?.username || '未知',
+          totalAmount: o.totalAmount,
+          status: o.status,
+          createTime: o.createTime
+        }
+      })
+    res.json({ code: 200, data: orders })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/admin/products/top', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5
+    await db.read()
+    const products = [...(db.data.products || [])]
+      .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+      .slice(0, limit)
+      .map(p => ({ id: p.id, name: p.name, sales: p.sales || 0, price: p.price, category: p.category }))
+    res.json({ code: 200, data: products })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
 app.listen(PORT, async () => {
   await initDB()
   console.log(`服务器运行在 http://localhost:${PORT}`)
