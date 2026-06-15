@@ -27,7 +27,12 @@ request.interceptors.response.use(
     console.log('响应:', response.config.url, response.data)
     const res = response.data
     if (res.code !== 200) {
-      ElMessage.error(res.message || '请求失败')
+      ElMessage({
+        message: res.message || '请求失败',
+        type: 'warning',
+        duration: 3000,
+        showClose: true
+      })
       if (res.code === 401) {
         localStorage.removeItem('token')
         localStorage.removeItem('userInfo')
@@ -39,7 +44,13 @@ request.interceptors.response.use(
   },
   error => {
     console.error('请求错误:', error)
-    ElMessage.error(error.message || '网络错误')
+    const msg = error.response?.data?.message || error.message || '网络错误'
+    ElMessage({
+      message: msg,
+      type: 'warning',
+      duration: 3000,
+      showClose: true
+    })
     return Promise.reject(error)
   }
 )
