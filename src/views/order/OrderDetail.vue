@@ -182,7 +182,6 @@ const handlePay = async () => {
   } catch (error) {
     if (error !== 'cancel') {
       console.error('付款失败:', error)
-      ElMessage.info(error.response?.data?.message || '付款失败')
     }
   } finally {
     paying.value = false

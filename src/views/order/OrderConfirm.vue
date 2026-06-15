@@ -152,7 +152,6 @@ const submitOrder = async () => {
     router.push(`/order/pay/${res.data.id}`)
   } catch (error) {
     console.error('提交订单失败:', error)
-    ElMessage.info(error.response?.data?.message || '提交订单失败')
   } finally {
     loading.value = false
   }

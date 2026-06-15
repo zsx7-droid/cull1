@@ -122,7 +122,6 @@ const handleDelete = async () => {
   } catch (error) {
     if (error !== 'cancel') {
       console.error('删除失败:', error)
-      ElMessage.info(error.response?.data?.message || '删除失败')
     }
   }
 }

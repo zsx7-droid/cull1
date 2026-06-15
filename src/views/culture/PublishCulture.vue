@@ -124,7 +124,6 @@ const submitForm = async () => {
         router.push('/culture')
       } catch (error) {
         console.error('发布失败:', error)
-        ElMessage.info(error.response?.data?.message || '发布失败，只有管理员才能发布')
       } finally {
         loading.value = false
       }

@@ -154,7 +154,6 @@ const handlePay = async () => {
     order.value.status = 'paid'
   } catch (error) {
     console.error('支付失败:', error)
-    ElMessage.info(error.response?.data?.message || '支付失败')
   } finally {
     loading.value = false
   }
