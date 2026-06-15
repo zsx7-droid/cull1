@@ -127,7 +127,7 @@ const loadOrder = async () => {
     }
   } catch (error) {
     console.error('加载订单失败:', error)
-    ElMessage.error('订单不存在')
+    ElMessage.info('订单不存在')
   }
 }
 
@@ -154,7 +154,7 @@ const handlePay = async () => {
     order.value.status = 'paid'
   } catch (error) {
     console.error('支付失败:', error)
-    ElMessage.error(error.response?.data?.message || '支付失败')
+    ElMessage.info(error.response?.data?.message || '支付失败')
   } finally {
     loading.value = false
   }

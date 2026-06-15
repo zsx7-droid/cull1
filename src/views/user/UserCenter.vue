@@ -539,7 +539,7 @@ const updateProfile = async () => {
     ElMessage.success('保存成功')
   } catch (error) {
     console.error('保存失败:', error)
-    ElMessage.error('保存失败')
+    ElMessage.info('保存失败')
   }
 }
 
@@ -740,7 +740,7 @@ const handleSubmitFeedback = async () => {
     loadMyFeedbacks()
   } catch (error) {
     console.error('提交反馈失败:', error)
-    ElMessage.error('提交失败')
+    ElMessage.info('提交失败')
   } finally {
     feedbackLoading.value = false
   }
@@ -816,7 +816,7 @@ const sendChatMessage = async () => {
     await loadChatMessages(chatFriend.value.friendId)
   } catch (error) {
     console.error('发送消息失败:', error)
-    ElMessage.error('发送失败')
+    ElMessage.info('发送失败')
   }
 }
 

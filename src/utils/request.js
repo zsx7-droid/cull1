@@ -29,7 +29,7 @@ request.interceptors.response.use(
     if (res.code !== 200) {
       ElMessage({
         message: res.message || '请求失败',
-        type: 'warning',
+        type: 'info',
         duration: 3000,
         showClose: true
       })
@@ -47,7 +47,7 @@ request.interceptors.response.use(
     const msg = error.response?.data?.message || error.message || '网络错误'
     ElMessage({
       message: msg,
-      type: 'warning',
+      type: 'info',
       duration: 3000,
       showClose: true
     })

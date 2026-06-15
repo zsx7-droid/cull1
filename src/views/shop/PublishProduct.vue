@@ -156,7 +156,7 @@ const submitForm = async () => {
         router.push('/shop')
       } catch (error) {
         console.error('发布失败:', error)
-        ElMessage.error('发布失败')
+        ElMessage.info('发布失败')
       } finally {
         loading.value = false
       }

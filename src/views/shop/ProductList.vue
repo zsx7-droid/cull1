@@ -186,7 +186,7 @@ const handleAddToCart = async (product) => {
     ElMessage.success('已加入购物车')
   } catch (error) {
     console.error('加入购物车失败:', error)
-    ElMessage.error('加入购物车失败')
+    ElMessage.info('加入购物车失败')
   }
 }
 

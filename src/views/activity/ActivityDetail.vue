@@ -110,7 +110,7 @@ const loadDetail = async () => {
     checkRegistration()
   } catch (error) {
     console.error('加载活动详情失败:', error)
-    ElMessage.error('加载失败')
+    ElMessage.info('加载失败')
   } finally {
     loading.value = false
   }
@@ -160,7 +160,7 @@ const handleRegister = async () => {
   } catch (error) {
     console.error('报名失败:', error)
     const msg = error.response?.data?.message || error.message || '报名失败'
-    ElMessage.error(msg)
+    ElMessage.info(msg)
   }
 }
 
@@ -189,7 +189,7 @@ const handleDelete = async () => {
   } catch (error) {
     if (error !== 'cancel') {
       console.error('删除失败:', error)
-      ElMessage.error(error.response?.data?.message || '删除失败')
+      ElMessage.info(error.response?.data?.message || '删除失败')
     }
   }
 }

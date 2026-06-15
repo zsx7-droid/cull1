@@ -197,7 +197,7 @@ const loadPost = async () => {
     }
   } catch (error) {
     console.error('加载帖子失败:', error)
-    ElMessage.error('帖子不存在')
+    ElMessage.info('帖子不存在')
   } finally {
     loading.value = false
   }
@@ -280,7 +280,7 @@ const handleDelete = async () => {
     router.push('/forum')
   } catch (error) {
     console.error('删除失败:', error)
-    ElMessage.error('删除失败')
+    ElMessage.info('删除失败')
   }
 }
 
@@ -299,7 +299,7 @@ const handleAddFriend = async () => {
     ElMessage.success('好友请求已发送，等待对方同意')
   } catch (error) {
     console.error('添加好友失败:', error)
-    ElMessage.error(error.response?.data?.message || '添加好友失败')
+    ElMessage.info(error.response?.data?.message || '添加好友失败')
   }
 }
 

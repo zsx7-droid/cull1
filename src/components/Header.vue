@@ -351,7 +351,7 @@ const sendChatMessage = async () => {
     await loadChatMessages(chatFriend.value.friendId)
   } catch (error) {
     console.error('发送消息失败:', error)
-    ElMessage.error('发送失败')
+    ElMessage.info('发送失败')
   }
 }
 

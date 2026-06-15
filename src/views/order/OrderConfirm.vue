@@ -106,11 +106,11 @@ const loadOrderItems = () => {
       orderItems.value = JSON.parse(decodeURIComponent(items))
     } catch (error) {
       console.error('解析订单商品失败:', error)
-      ElMessage.error('订单信息错误')
+      ElMessage.info('订单信息错误')
       router.push('/shop')
     }
   } else {
-    ElMessage.error('订单信息错误')
+    ElMessage.info('订单信息错误')
     router.push('/shop')
   }
 }
@@ -152,7 +152,7 @@ const submitOrder = async () => {
     router.push(`/order/pay/${res.data.id}`)
   } catch (error) {
     console.error('提交订单失败:', error)
-    ElMessage.error(error.response?.data?.message || '提交订单失败')
+    ElMessage.info(error.response?.data?.message || '提交订单失败')
   } finally {
     loading.value = false
   }
