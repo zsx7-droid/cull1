@@ -1,0 +1,398 @@
+{
+  "users": [
+    {
+      "id": 1776760763823,
+      "username": "testuser",
+      "phone": "13800138000",
+      "password": "$2a$10$HJt.ej7SOIFl8.DYFPxNa.BqcKMJ5PwnlJaRH8skUuQ00entOExoi",
+      "role": "user",
+      "createdAt": "2026-04-21T08:39:23.823Z"
+    },
+    {
+      "id": 1776760838419,
+      "username": "123",
+      "phone": "13333333331",
+      "password": "$2a$10$L4MAclz8z604.V.natKBKOYwH9y5oYWMGKAOz0shEDBBogPVRQpPa",
+      "role": "user",
+      "createdAt": "2026-04-21T08:40:38.419Z",
+      "nickname": "123",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=1"
+    },
+    {
+      "id": 1776760943799,
+      "username": "www",
+      "phone": "17816163515",
+      "password": "$2a$10$JJ1sUysmZZdu0D/XY.g5Ouiv1OYPE1sxZUlL.9G98e3249CA9Jvoe",
+      "role": "user",
+      "createdAt": "2026-04-21T08:42:23.799Z"
+    },
+    {
+      "id": 1776761547959,
+      "username": "赵顺新",
+      "phone": "17816163515",
+      "password": "$2a$10$1pEJv7xwhkCovA.bouut1eFNgRy/KPl2I6KvOiLzD.uqcudV/c68S",
+      "role": "user",
+      "createdAt": "2026-04-21T08:52:27.959Z",
+      "nickname": "赵顺新",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
+      "bio": "haoren",
+      "email": "3283185426@qq.com"
+    },
+    {
+      "id": 1776824347060,
+      "username": "zsx",
+      "phone": "15215459567",
+      "password": "$2a$10$iUoNEKO9SZLKRI00n7kBf.BVWfYGFAGdYidkBTiUKrZubZOb86mJy",
+      "role": "user",
+      "createdAt": "2026-04-22T02:19:07.060Z",
+      "nickname": "zsx",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=3"
+    },
+    {
+      "id": 1777000000001,
+      "username": "admin",
+      "phone": "13900000000",
+      "password": "$2a$10$gBgdCkKSyicOR.ehZ8xEVuh9Nuecmoi3pXvouS4YHznYnSOFMMS4S",
+      "role": "admin",
+      "createdAt": "2026-04-23T00:00:00.000Z",
+      "nickname": "管理员",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=admin"
+    },
+    {
+      "id": 1776934383643,
+      "username": "吾问无为谓",
+      "phone": "13867138745",
+      "password": "$2a$10$vEqd3VpqkMpQiYDraKormeNTprYMU/co8RGSfyjSZXSstLRP6KGo2",
+      "role": "user",
+      "createdAt": "2026-04-23T08:53:03.643Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": 1776763380657,
+      "title": "测试帖子",
+      "content": "测试内容",
+      "category": "山歌",
+      "authorId": 1776760763823,
+      "authorName": "testuser",
+      "createTime": "2026-04-21T09:23:00.657Z",
+      "views": 1,
+      "likes": 0,
+      "replies": 0,
+      "isTop": false,
+      "isEssence": false
+    },
+    {
+      "id": 1776765768215,
+      "title": "12",
+      "content": "12",
+      "category": "山歌",
+      "authorId": 1776761547959,
+      "authorName": "赵顺新",
+      "createTime": "2026-04-21T10:02:48.215Z",
+      "views": 2,
+      "likes": 0,
+      "replies": 0,
+      "isTop": false,
+      "isEssence": false
+    },
+    {
+      "id": 1776770218751,
+      "title": "嗡嗡嗡",
+      "content": "你好",
+      "category": "服饰",
+      "authorId": 1776760943799,
+      "authorName": "www",
+      "createTime": "2026-04-21T11:16:58.751Z",
+      "views": 4,
+      "likes": 0,
+      "replies": 0,
+      "isTop": false,
+      "isEssence": false
+    },
+    {
+      "id": 1776823112217,
+      "title": "12",
+      "content": "12",
+      "category": "山歌",
+      "authorId": 1776760838419,
+      "authorName": "123",
+      "authorAvatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
+      "createTime": "2026-04-22T01:58:32.217Z",
+      "views": 56,
+      "likes": 0,
+      "replies": 0,
+      "isTop": false,
+      "isEssence": false
+    }
+  ],
+  "comments": [],
+  "likes": [],
+  "favorites": [],
+  "products": [
+    {
+      "id": 1777110458260,
+      "name": "服装",
+      "description": "漂亮的衣服",
+      "price": 20,
+      "stock": 4,
+      "category": "畲族服饰",
+      "images": [
+        "http://localhost:8080/uploads/1777110457458-465552646.png"
+      ],
+      "sellerId": 1777000000001,
+      "sellerName": "admin",
+      "sales": 1,
+      "createTime": "2026-04-25T09:47:38.260Z"
+    },
+    {
+      "id": 1777187474089,
+      "name": "茶具",
+      "description": "从畲族最具代表性的服饰领衫中提取出具有畲族特色的符号元素进行创意组合，形成造型优美、典雅绚丽的花纹饰样，开发出别具特色的畲蓝功夫陶瓷茶具套装",
+      "price": 10,
+      "stock": 4,
+      "category": "文创潮流周边",
+      "images": [
+        "http://localhost:8080/uploads/1777187470990-33225104.png"
+      ],
+      "sellerId": 1777000000001,
+      "sellerName": "admin",
+      "sales": 1,
+      "createTime": "2026-04-26T07:11:14.089Z"
+    },
+    {
+      "id": 1777187870137,
+      "name": "刺绣",
+      "description": "畲族刺绣图案纹样主要有植物纹样、动物纹样、人物故事纹样等等，再以不同的组合形式出现，融合、叠加、对称等处理，使纹样的整体感更加丰富。",
+      "price": 15,
+      "stock": 3,
+      "category": "织彩带与布艺",
+      "images": [
+        "http://localhost:8080/uploads/1777187869540-775766101.png"
+      ],
+      "sellerId": 1777000000001,
+      "sellerName": "admin",
+      "sales": 2,
+      "createTime": "2026-04-26T07:17:50.137Z"
+    },
+    {
+      "id": 1777187940968,
+      "name": "彩带",
+      "description": "畲族彩带，亦称山哈带，又称花带，字带，承载着古时畲族先民的祈福信号，保留着最原始的意符文字，是畲族民族文化的活化石，也是畲族青年男女定情信物、定亲回礼和驱邪祝福的吉祥物。",
+      "price": 25,
+      "stock": 9,
+      "category": "织彩带与布艺",
+      "images": [
+        "http://localhost:8080/uploads/1777187932197-818130944.png"
+      ],
+      "sellerId": 1777000000001,
+      "sellerName": "admin",
+      "sales": 1,
+      "createTime": "2026-04-26T07:19:00.968Z"
+    },
+    {
+      "id": 1777188101480,
+      "name": "斗笠",
+      "description": "浙江省丽水市景宁畲族自治县鹤溪街道东弄村的文创斗笠，图案精美用料扎实",
+      "price": 5,
+      "stock": 18,
+      "category": "文创潮流周边",
+      "images": [
+        "http://localhost:8080/uploads/1777188100674-714664177.png"
+      ],
+      "sellerId": 1777000000001,
+      "sellerName": "admin",
+      "sales": 0,
+      "createTime": "2026-04-26T07:21:41.480Z"
+    }
+  ],
+  "categories": [],
+  "carts": [],
+  "orders": [
+    {
+      "id": 1777110499345,
+      "orderNo": "ORD1777110499345",
+      "userId": 1776761547959,
+      "items": [
+        {
+          "productId": 1777110458260,
+          "productName": "服装",
+          "productImage": "http://localhost:8080/uploads/1777110457458-465552646.png",
+          "price": 20,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 20,
+      "address": "山东",
+      "contact": "17816163515",
+      "status": "paid",
+      "createTime": "2026-04-25T09:48:19.345Z",
+      "payTime": "2026-04-25T09:50:55.695Z"
+    },
+    {
+      "id": 1777199214864,
+      "orderNo": "ORD1777199214864",
+      "userId": 1776761547959,
+      "items": [
+        {
+          "productId": 1777187940968,
+          "productName": "彩带",
+          "productImage": "http://localhost:8080/uploads/1777187932197-818130944.png",
+          "price": 25,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 25,
+      "address": "山东",
+      "contact": "17816163515",
+      "status": "paid",
+      "createTime": "2026-04-26T10:26:54.864Z",
+      "payTime": "2026-04-26T10:26:58.390Z"
+    },
+    {
+      "id": 1777200336672,
+      "orderNo": "ORD1777200336672",
+      "userId": 1776761547959,
+      "items": [
+        {
+          "productId": 1777187870137,
+          "productName": "刺绣",
+          "productImage": "http://localhost:8080/uploads/1777187869540-775766101.png",
+          "price": 15,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 15,
+      "address": "山东",
+      "contact": "17816163515",
+      "paymentMethod": "alipay",
+      "status": "paid",
+      "createTime": "2026-04-26T10:45:36.672Z",
+      "expireTime": "2026-04-26T11:15:36.672Z",
+      "payTime": "2026-04-26T10:45:42.811Z"
+    },
+    {
+      "id": 1777200496017,
+      "orderNo": "ORD1777200496017",
+      "userId": 1776761547959,
+      "items": [
+        {
+          "productId": 1777187474089,
+          "productName": "茶具",
+          "productImage": "http://localhost:8080/uploads/1777187470990-33225104.png",
+          "price": 10,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 10,
+      "address": "杭州",
+      "contact": "15215459567",
+      "paymentMethod": "wechat",
+      "status": "paid",
+      "createTime": "2026-04-26T10:48:16.017Z",
+      "expireTime": "2026-04-26T11:18:16.017Z",
+      "payTime": "2026-04-26T10:53:16.475Z"
+    },
+    {
+      "id": 1777617414572,
+      "orderNo": "ORD1777617414572",
+      "userId": 1776761547959,
+      "items": [
+        {
+          "productId": 1777187870137,
+          "productName": "刺绣",
+          "productImage": "http://localhost:8080/uploads/1777187869540-775766101.png",
+          "price": 15,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 15,
+      "address": "山东",
+      "contact": "1234356565",
+      "paymentMethod": "wechat",
+      "status": "pending",
+      "createTime": "2026-05-01T06:36:54.572Z",
+      "expireTime": "2026-05-01T07:06:54.572Z"
+    }
+  ],
+  "cultures": [
+    {
+      "id": 1777003047013,
+      "title": "来源传说",
+      "content": "关于畲族来源众说纷纭，莫衷一是，主要有以下几种说法：\n（一）畲瑶同源于汉晋时代长沙的武陵蛮（又称五溪蛮）说。此说认为畲族和瑶族都家喻户晓地流传有属于原始社会遗留下来的图腾崇拜——盘瓠传说，传说的内容与汉晋时代分布在长汉中下游的武陵蛮所流传的盘瓠传说大同小异，据此认为畲、瑶两族与武陵蛮有密切的渊源关系。瑶族中自称为勉的盘瓠瑶（或称盘瑶、板瑶、顶板瑶、过山瑶）与自称为门的山子瑶，约占瑶族总人价的一半以上也崇信盘瓠传说。\n（二）东夷说。有人在畲、瑶同源于武陵蛮说的墓础上，更进一步把畲族远源追溯至春秋战国时期生活在淮河和黄河之间的东夷里靠西南的一支徐夷，认为畲族和瑶族同源于武陵蛮，而武陵蛮是东夷迁居鄂、湘西部地区后，融合了其他民族成份而形成的。已故的潘光旦教授把长沙武陵蛮的渊源关系往前追溯到春秋战国时代生活在淮河和黄河之间的东夷里靠西南的一支徐夷。他认为徐夷与苗、瑶、畲都有密切的渊源关系，后来向长江流域活动进入五岭山脉中的一部分，就是发展为的瑶族，一部分从五岭山脉向东在江西、福建、浙江的山区里和汉族杂居融合而成为畲族；另一部分曾定居在洞庭湖一带，即后来进入湘西和贵州的苗族。\n（三）越人后裔说。此说根据史籍中关于古越族在分布地域上的对照、认为畲族乃古越人的后裔。在越人后裔说中，又有许多不同的具体说法，如认为畲族乃春秋时期越王勾践或范蠡的子孙；还有认为畲族是源于汉晋讨伐的山越，特别是与汉高祖十年（公元前196年）封地在闽、粤、赣三省交界地区的越人后裔南海王织有密切的渊源关系，等等。\n（四）南蛮说。此说认为畲族乃蛮或南蛮的一支，与汉晋时期长江中游崇奉盘瓠传说的南蛮有密切的历史渊源关系，又因福建、浙江等地这畲族家喻户晓传说广东凤凰山乃是他们民族的发样地，从而论证畲族乃东汉时期久居广东的南蛮一支，是广东的土著民族。\n（五）福建土著闽族后裔说。此说认为闽、越乃国南方的两个古老民族，闽族系福建土著，乃畲族之先民，越乃福建的客族，畲族非衍出于越族。",
+      "type": "history",
+      "images": [
+        "http://localhost:8080/uploads/1777003045968-97185639.png"
+      ],
+      "authorId": 1777000000001,
+      "authorName": "admin",
+      "createTime": "2026-04-24T03:57:27.013Z"
+    },
+    {
+      "id": 1777003291581,
+      "title": "畲族文化",
+      "content": "畲族文化是指具有畲族特色的历史、文学、艺术、科学价值的文化形式、形态，包括：畲族语言及口头文学；畲歌、舞蹈、武术；畲族传统技艺；畲族饮食文化；畲医畲药；畲族传统礼仪、节庆等民俗；与畲族生产方式、生活习俗和历史发展相关的建筑、畲族服饰、器具、手稿、谱牒等；比较完整的畲族文化生态区域；畲族文化的其他表现形式， 及民谚、民乐、故事等畲族文化遗产。",
+      "type": "culture",
+      "images": [
+        "http://localhost:8080/uploads/1777003287914-788346179.png"
+      ],
+      "authorId": 1777000000001,
+      "authorName": "admin",
+      "createTime": "2026-04-24T04:01:31.581Z"
+    }
+  ],
+  "activities": [
+    {
+      "id": 1777004512703,
+      "title": "浙江景宁：畲族三月三民俗风情万种",
+      "content": "中国畲乡三月三活动启动暨公主巡游民俗风情沉浸式展演在浙江省丽水市景宁畲族自治县举行，集中展现畲族民俗文化，让市民游客沉浸式感受畲乡的独特魅力。",
+      "location": "浙江省丽水市景宁畲族自治县",
+      "time": "2026-04-18 08:30:00",
+      "images": [
+        "http://localhost:8080/uploads/1777004484096-701326547.png"
+      ],
+      "authorId": 1777000000001,
+      "authorName": "admin",
+      "createTime": "2026-04-24T04:21:52.703Z"
+    },
+    {
+      "id": 1777192484590,
+      "title": "浙江龙游沐尘畲族乡三月三：围棋文化激荡民族风情",
+      "content": "衢州龙游沐尘畲族乡三月三民族风情文化旅游月活动在当地启幕，现场人头攒动，围棋赛事、畲族巡游、歌舞狂欢、民俗市集等活动轮番上演，吸引各地游客齐聚畲乡。",
+      "location": "浙江衢州龙游",
+      "time": "2026-06-02 09:00:00",
+      "images": [
+        "http://localhost:8080/uploads/1777192455865-541150044.png"
+      ],
+      "authorId": 1777000000001,
+      "authorName": "admin",
+      "createTime": "2026-04-26T08:34:44.590Z"
+    }
+  ],
+  "registrations": [
+    {
+      "id": 1777005204838,
+      "activityId": 1777004512703,
+      "activityTitle": "浙江景宁：畲族三月三民俗风情万种",
+      "userId": 1776761547959,
+      "userName": "赵顺新",
+      "phone": "16677866525",
+      "createTime": "2026-04-24T04:33:24.838Z"
+    }
+  ],
+  "spots": [],
+  "friends": [],
+  "messages": [],
+  "feedbacks": [
+    {
+      "id": 1777201544805,
+      "userId": 1776761547959,
+      "username": "赵顺新",
+      "nickname": "赵顺新",
+      "type": "opinion",
+      "content": "有点问题",
+      "status": "pending",
+      "createTime": "2026-04-26T11:05:44.805Z"
+    }
+  ]
+}
