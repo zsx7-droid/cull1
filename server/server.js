@@ -2230,6 +2230,55 @@ app.get('/api/admin/products/top', async (req, res) => {
   }
 })
 
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    await db.read()
+    const users = (db.data.users || []).map(u => ({
+      id: u.id,
+      username: u.username,
+      nickname: u.nickname || '',
+      phone: u.phone,
+      role: u.role,
+      avatar: u.avatar || '',
+      email: u.email || '',
+      createdAt: u.createdAt
+    }))
+    res.json({ code: 200, data: users })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.delete('/api/admin/user/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    await db.read()
+    const index = db.data.users.findIndex(u => u.id === parseInt(id))
+    if (index === -1) return res.status(404).json({ code: 404, message: '用户不存在' })
+    if (db.data.users[index].role === 'admin') return res.status(403).json({ code: 403, message: '不能删除管理员' })
+    db.data.users.splice(index, 1)
+    await db.write()
+    res.json({ code: 200, message: '删除成功' })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/admin/orders', async (req, res) => {
+  try {
+    await db.read()
+    const orders = [...(db.data.orders || [])]
+      .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+      .map(o => {
+        const buyer = db.data.users.find(u => u.id === o.userId)
+        return { ...o, buyerName: buyer?.nickname || buyer?.username || '未知' }
+      })
+    res.json({ code: 200, data: orders })
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
 app.listen(PORT, async () => {
   await initDB()
   console.log(`服务器运行在 http://localhost:${PORT}`)
