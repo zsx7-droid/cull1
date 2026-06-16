@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 const adapter = new JSONFile(join(__dirname, 'data', 'db.json'))
-const defaultData = { users: [], posts: [], comments: [], likes: [], favorites: [], products: [], categories: [], carts: [], orders: [], cultures: [], activities: [] }
+const defaultData = { users: [], posts: [], comments: [], likes: [], favorites: [], products: [], categories: [], carts: [], orders: [], cultures: [], activities: [], registrations: [], friends: [], messages: [], feedbacks: [], spots: [] }
 const db = new Low(adapter, defaultData)
 
 async function initDB() {
@@ -90,6 +90,21 @@ async function initDB() {
   }
   if (!db.data.activities) {
     db.data.activities = []
+  }
+  if (!db.data.registrations) {
+    db.data.registrations = []
+  }
+  if (!db.data.friends) {
+    db.data.friends = []
+  }
+  if (!db.data.messages) {
+    db.data.messages = []
+  }
+  if (!db.data.feedbacks) {
+    db.data.feedbacks = []
+  }
+  if (!db.data.spots) {
+    db.data.spots = []
   }
   await db.write()
 }
@@ -210,12 +225,12 @@ app.get('/api/user/info', authMiddleware, async (req, res) => {
   })
 })
 
-app.put('/api/user/update', async (req, res) => {
+app.put('/api/user/update', authMiddleware, async (req, res) => {
   try {
     const { id, nickname, phone, email, avatar, bio } = req.body
-    
-    if (!id) {
-      return res.status(401).json({ code: 401, message: '请先登录' })
+
+    if (!id || id !== req.user.id) {
+      return res.status(403).json({ code: 403, message: '无权操作' })
     }
     
     await db.read()
@@ -358,7 +373,7 @@ app.get('/api/forum/post/:id', async (req, res) => {
   }
 })
 
-app.post('/api/forum/post', async (req, res) => {
+app.post('/api/forum/post', authMiddleware, async (req, res) => {
   try {
     const { title, content, category, authorId, authorName } = req.body
     
@@ -512,20 +527,21 @@ app.post('/api/forum/reply', async (req, res) => {
   }
 })
 
-app.delete('/api/forum/post/:id', async (req, res) => {
+app.delete('/api/forum/post/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const { userId } = req.body
-    
+    const userId = req.user.id
+
     await db.read()
     const postIndex = db.data.posts.findIndex(p => p.id === parseInt(id))
-    
+
     if (postIndex === -1) {
       return res.status(404).json({ code: 404, message: '帖子不存在' })
     }
-    
+
     const post = db.data.posts[postIndex]
-    if (post.authorId !== userId) {
+    const user = db.data.users.find(u => u.id === userId)
+    if (post.authorId !== userId && (!user || user.role !== 'admin')) {
       return res.status(403).json({ code: 403, message: '无权删除此帖子' })
     }
     
@@ -745,22 +761,31 @@ app.get('/api/shop/product/:id', async (req, res) => {
   }
 })
 
-app.post('/api/shop/product', async (req, res) => {
+app.post('/api/shop/product', authMiddleware, async (req, res) => {
   try {
     const { name, description, price, stock, category, images, sellerId, sellerName } = req.body
-    
+
     if (!name || !price || !category || !sellerId) {
       return res.status(400).json({ code: 400, message: '请填写完整信息' })
     }
-    
+
+    const parsedPrice = parseFloat(price)
+    const parsedStock = parseInt(stock) || 0
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
+      return res.status(400).json({ code: 400, message: '价格无效' })
+    }
+    if (parsedStock < 0) {
+      return res.status(400).json({ code: 400, message: '库存不能为负数' })
+    }
+
     await db.read()
-    
+
     const newProduct = {
       id: Date.now(),
       name,
       description: description || '',
-      price: parseFloat(price),
-      stock: parseInt(stock) || 0,
+      price: parsedPrice,
+      stock: parsedStock,
       category,
       images: images || [],
       sellerId,
@@ -783,7 +808,7 @@ app.post('/api/shop/product', async (req, res) => {
   }
 })
 
-app.post('/api/shop/cart', async (req, res) => {
+app.post('/api/shop/cart', authMiddleware, async (req, res) => {
   try {
     const { productId, quantity, userId } = req.body
     
@@ -899,7 +924,7 @@ app.delete('/api/shop/cart', async (req, res) => {
   }
 })
 
-app.post('/api/shop/order', async (req, res) => {
+app.post('/api/shop/order', authMiddleware, async (req, res) => {
   try {
     const { items, userId, address, contact, totalAmount, paymentMethod } = req.body
     
@@ -992,30 +1017,31 @@ app.get('/api/shop/seller-orders', async (req, res) => {
     const orders = db.data.orders
     const products = db.data.products
     
+    const uid = parseInt(userId)
     const sellerOrders = orders
       .filter(o => {
         return o.items && o.items.some(item => {
-          const product = products.find(p => p.id == item.productId)
-          return product && product.sellerId == userId
+          const product = products.find(p => p.id === item.productId)
+          return product && product.sellerId === uid
         })
       })
       .map(o => {
-        const buyer = db.data.users.find(u => u.id == o.userId)
+        const buyer = db.data.users.find(u => u.id === o.userId)
         return {
           ...o,
           buyerName: buyer?.username || '',
           buyerNickname: buyer?.nickname || '',
           buyerPhone: o.contact || '',
           items: o.items.map(item => {
-            const product = products.find(p => p.id == item.productId)
+            const product = products.find(p => p.id === item.productId)
             return {
               ...item,
               sellerId: product?.sellerId,
-              isSellerItem: product?.sellerId == userId
+              isSellerItem: product?.sellerId === uid
             }
           }).filter(item => {
-            const product = products.find(p => p.id == item.productId)
-            return product?.sellerId == userId
+            const product = products.find(p => p.id === item.productId)
+            return product?.sellerId === uid
           })
         }
       })
@@ -1158,14 +1184,15 @@ app.get('/api/culture/:id', async (req, res) => {
   }
 })
 
-app.post('/api/culture', async (req, res) => {
+app.post('/api/culture', authMiddleware, async (req, res) => {
   try {
-    const { title, content, type, images, userId } = req.body
-    
-    if (!title || !content || !userId) {
+    const { title, content, type, images } = req.body
+    const userId = req.user.id
+
+    if (!title || !content) {
       return res.status(400).json({ code: 400, message: '请填写完整信息' })
     }
-    
+
     await db.read()
     const user = db.data.users.find(u => u.id === userId)
     if (!user || user.role !== 'admin') {
@@ -1261,14 +1288,15 @@ app.get('/api/activity/:id', async (req, res) => {
   }
 })
 
-app.post('/api/activity', async (req, res) => {
+app.post('/api/activity', authMiddleware, async (req, res) => {
   try {
-    const { title, content, location, time, images, userId } = req.body
-    
-    if (!title || !content || !time || !userId) {
+    const { title, content, location, time, images } = req.body
+    const userId = req.user.id
+
+    if (!title || !content || !time) {
       return res.status(400).json({ code: 400, message: '请填写完整信息' })
     }
-    
+
     await db.read()
     const user = db.data.users.find(u => u.id === userId)
     if (!user || user.role !== 'admin') {
@@ -1301,31 +1329,70 @@ app.post('/api/activity', async (req, res) => {
   }
 })
 
-app.delete('/api/culture/:id', async (req, res) => {
+app.put('/api/activity/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const { userId } = req.query
-    
-    if (!userId) {
-      return res.status(400).json({ code: 400, message: '请先登录' })
-    }
-    
+    const userId = req.user.id
+    const { title, content, location, time, images } = req.body
+
     await db.read()
-    const user = db.data.users.find(u => u.id === parseInt(userId))
-    
+    const user = db.data.users.find(u => u.id === userId)
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ code: 403, message: '只有管理员才能编辑活动' })
+    }
+
+    const activity = db.data.activities.find(a => a.id === parseInt(id))
+    if (!activity) {
+      return res.status(404).json({ code: 404, message: '活动不存在' })
+    }
+
+    if (title) activity.title = title
+    if (content) activity.content = content
+    if (location !== undefined) activity.location = location
+    if (time) activity.time = time
+    if (images) activity.images = images
+    activity.updateTime = new Date().toISOString()
+
+    await db.write()
+    res.json({ code: 200, message: '更新成功', data: activity })
+  } catch (error) {
+    console.error('更新活动错误:', error)
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.get('/api/spot/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    await db.read()
+    const spot = db.data.spots.find(s => s.id === parseInt(id))
+    if (!spot) {
+      return res.status(404).json({ code: 404, message: '景点不存在' })
+    }
+    res.json({ code: 200, data: spot })
+  } catch (error) {
+    console.error('获取景点详情错误:', error)
+    res.status(500).json({ code: 500, message: '服务器错误' })
+  }
+})
+
+app.delete('/api/culture/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params
+    const userId = req.user.id
+
+    await db.read()
+    const user = db.data.users.find(u => u.id === userId)
+
     if (!user || user.role !== 'admin') {
       return res.status(403).json({ code: 403, message: '只有管理员才能删除' })
     }
-    
+
     const cultureIndex = db.data.cultures.findIndex(c => c.id === parseInt(id))
     if (cultureIndex === -1) {
       return res.status(404).json({ code: 404, message: '文化内容不存在' })
     }
-    
-    if (db.data.cultures[cultureIndex].authorId !== parseInt(userId)) {
-      return res.status(403).json({ code: 403, message: '只能删除自己发布的内容' })
-    }
-    
+
     db.data.cultures.splice(cultureIndex, 1)
     await db.write()
     
@@ -1339,31 +1406,23 @@ app.delete('/api/culture/:id', async (req, res) => {
   }
 })
 
-app.delete('/api/activity/:id', async (req, res) => {
+app.delete('/api/activity/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const { userId } = req.query
-    
-    if (!userId) {
-      return res.status(400).json({ code: 400, message: '请先登录' })
-    }
-    
+    const userId = req.user.id
+
     await db.read()
-    const user = db.data.users.find(u => u.id === parseInt(userId))
-    
+    const user = db.data.users.find(u => u.id === userId)
+
     if (!user || user.role !== 'admin') {
       return res.status(403).json({ code: 403, message: '只有管理员才能删除' })
     }
-    
+
     const activityIndex = db.data.activities.findIndex(a => a.id === parseInt(id))
     if (activityIndex === -1) {
       return res.status(404).json({ code: 404, message: '活动不存在' })
     }
-    
-    if (db.data.activities[activityIndex].authorId !== parseInt(userId)) {
-      return res.status(403).json({ code: 403, message: '只能删除自己发布的内容' })
-    }
-    
+
     db.data.activities.splice(activityIndex, 1)
     await db.write()
     
@@ -1429,16 +1488,20 @@ function sendSms(phone, code) {
       res.on('data', (chunk) => data += chunk)
       res.on('end', () => {
         console.log('阿里云短信响应:', data)
-        const result = JSON.parse(data)
-        if (result.Code === 'OK') {
-          resolve(result)
-        } else {
-          console.error('阿里云错误:', result.Code, result.Message)
-          reject(new Error(result.Message || '发送失败，错误码: ' + result.Code))
+        try {
+          const result = JSON.parse(data)
+          if (result.Code === 'OK') {
+            resolve(result)
+          } else {
+            console.error('阿里云错误:', result.Code, result.Message)
+            reject(new Error(result.Message || '发送失败，错误码: ' + result.Code))
+          }
+        } catch (e) {
+          reject(new Error('短信服务响应解析失败'))
         }
       })
     })
-    
+
     req.on('error', (err) => {
       console.error('HTTPS请求错误:', err.message)
       reject(err)
@@ -1498,12 +1561,16 @@ function sendSmsByDypns(phone, code) {
       res.on('data', (chunk) => data += chunk)
       res.on('end', () => {
         console.log('阿里云号码认证响应:', data)
-        const result = JSON.parse(data)
-        if (result.Code === 'OK') {
-          resolve(result)
-        } else {
-          console.error('阿里云错误:', result.Code, result.Message)
-          reject(new Error(result.Message || '发送失败，错误码: ' + result.Code))
+        try {
+          const result = JSON.parse(data)
+          if (result.Code === 'OK') {
+            resolve(result)
+          } else {
+            console.error('阿里云错误:', result.Code, result.Message)
+            reject(new Error(result.Message || '发送失败，错误码: ' + result.Code))
+          }
+        } catch (e) {
+          reject(new Error('短信服务响应解析失败'))
         }
       })
     })
@@ -1517,8 +1584,13 @@ function sendSmsByDypns(phone, code) {
   })
 }
 
-// 使用内存存储验证码
 const smsCodes = new Map()
+setInterval(() => {
+  const now = Date.now()
+  for (const [phone, record] of smsCodes) {
+    if (now > record.expireTime) smsCodes.delete(phone)
+  }
+}, 60000)
 
 app.post('/api/sms/send', async (req, res) => {
   try {
@@ -1596,7 +1668,7 @@ app.post('/api/sms/verify', async (req, res) => {
   }
 })
 
-app.post('/api/registration', async (req, res) => {
+app.post('/api/registration', authMiddleware, async (req, res) => {
   try {
     console.log('收到报名请求:', req.body)
     const { activityId, activityTitle, userId, userName, phone } = req.body
@@ -1641,13 +1713,15 @@ app.get('/api/registrations', async (req, res) => {
     const { activityId, userId } = req.query
     
     let registrations = db.data.registrations
-    
+
     if (activityId) {
-      registrations = registrations.filter(r => r.activityId == activityId)
+      const aid = parseInt(activityId)
+      registrations = registrations.filter(r => r.activityId === aid || r.activityId === activityId)
     }
-    
+
     if (userId) {
-      registrations = registrations.filter(r => r.userId == userId)
+      const uid = parseInt(userId)
+      registrations = registrations.filter(r => r.userId === uid || r.userId === userId)
     }
     
     console.log('查询 registrations:', { activityId, userId, count: registrations.length })
@@ -1667,12 +1741,13 @@ app.get('/api/friends', async (req, res) => {
     const { userId } = req.query
     await db.read()
     let friends = db.data.friends
-    
+    const uid = parseInt(userId)
+
     if (userId) {
-      friends = friends.filter(f => (f.userId == userId || f.friendId == userId) && (!f.status || f.status === 'accepted'))
+      friends = friends.filter(f => (f.userId === uid || f.friendId === uid) && (!f.status || f.status === 'accepted'))
       friends = friends.map(f => {
-        const friendId = f.userId == userId ? f.friendId : f.userId
-        const friend = db.data.users.find(u => u.id == friendId)
+        const friendId = f.userId === uid ? f.friendId : f.userId
+        const friend = db.data.users.find(u => u.id === friendId)
         return {
           ...f,
           friendId: friendId,
@@ -1699,11 +1774,12 @@ app.get('/api/friend-requests', async (req, res) => {
     await db.read()
     let requests = db.data.friends
     
+    const uid = parseInt(userId)
     if (userId) {
       if (type === 'sent') {
-        requests = requests.filter(f => f.userId == userId && f.status === 'pending')
+        requests = requests.filter(f => f.userId === uid && f.status === 'pending')
         requests = requests.map(f => {
-          const user = db.data.users.find(u => u.id == f.friendId)
+          const user = db.data.users.find(u => u.id === f.friendId)
           return {
             ...f,
             fromUserId: f.friendId,
@@ -1713,9 +1789,9 @@ app.get('/api/friend-requests', async (req, res) => {
           }
         })
       } else {
-        requests = requests.filter(f => f.friendId == userId && f.status === 'pending')
+        requests = requests.filter(f => f.friendId === uid && f.status === 'pending')
         requests = requests.map(f => {
-          const user = db.data.users.find(u => u.id == f.userId)
+          const user = db.data.users.find(u => u.id === f.userId)
           return {
             ...f,
             fromUserId: f.userId,
@@ -1745,13 +1821,15 @@ app.post('/api/friends', async (req, res) => {
       return res.status(400).json({ code: 400, message: '参数不完整' })
     }
     
-    if (userId == friendId) {
+    if (parseInt(userId) === parseInt(friendId)) {
       return res.status(400).json({ code: 400, message: '不能添加自己为好友' })
     }
-    
+
+    const uid = parseInt(userId)
+    const fid = parseInt(friendId)
     const existing = db.data.friends.find(
-      f => (f.userId == userId && f.friendId == friendId) || 
-           (f.userId == friendId && f.friendId == userId)
+      f => (f.userId === uid && f.friendId === fid) ||
+           (f.userId === fid && f.friendId === uid)
     )
     
     if (existing) {
@@ -1791,7 +1869,7 @@ app.delete('/api/friends/:id', async (req, res) => {
     const { userId, action } = req.query
     
     await db.read()
-    const friend = db.data.friends.find(f => f.id == id)
+    const friend = db.data.friends.find(f => f.id === parseInt(id))
     
     if (!friend) {
       return res.status(404).json({ code: 404, message: '好友关系不存在' })
@@ -1805,14 +1883,14 @@ app.delete('/api/friends/:id', async (req, res) => {
         message: '已接受好友请求'
       })
     } else if (action === 'reject') {
-      db.data.friends = db.data.friends.filter(f => f.id != id)
+      db.data.friends = db.data.friends.filter(f => f.id !== parseInt(id))
       await db.write()
       return res.json({
         code: 200,
         message: '已拒绝好友请求'
       })
     } else {
-      db.data.friends = db.data.friends.filter(f => f.id != id)
+      db.data.friends = db.data.friends.filter(f => f.id !== parseInt(id))
       await db.write()
       return res.json({
         code: 200,
@@ -1830,26 +1908,28 @@ app.get('/api/messages', async (req, res) => {
     const { userId, friendId } = req.query
     await db.read()
     let messages = db.data.messages
-    
+    const uid = parseInt(userId)
+    const fid2 = friendId ? parseInt(friendId) : null
+
     if (userId && friendId) {
-      messages = messages.filter(m => 
-        (m.senderId == userId && m.receiverId == friendId) || 
-        (m.senderId == friendId && m.receiverId == userId)
+      messages = messages.filter(m =>
+        (m.senderId === uid && m.receiverId === fid2) ||
+        (m.senderId === fid2 && m.receiverId === uid)
       )
       messages = messages.sort((a, b) => new Date(a.createTime) - new Date(b.createTime))
     } else if (userId) {
       const userIds = new Set()
       messages.forEach(m => {
-        if (m.senderId == userId) userIds.add(m.receiverId)
-        if (m.receiverId == userId) userIds.add(m.senderId)
+        if (m.senderId === uid) userIds.add(m.receiverId)
+        if (m.receiverId === uid) userIds.add(m.senderId)
       })
       const conversationList = []
       for (const fid of userIds) {
-        const friend = db.data.users.find(u => u.id == fid)
+        const friend = db.data.users.find(u => u.id === fid)
         const lastMsg = messages
-          .filter(m => m.senderId == fid || m.receiverId == fid)
+          .filter(m => (m.senderId === fid && m.receiverId === uid) || (m.senderId === uid && m.receiverId === fid))
           .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))[0]
-        const unreadCount = messages.filter(m => m.senderId == fid && m.receiverId == userId && !m.read).length
+        const unreadCount = messages.filter(m => m.senderId === fid && m.receiverId === uid && !m.read).length
         conversationList.push({
           friendId: fid,
           friendUsername: friend?.username || '',
@@ -1910,8 +1990,10 @@ app.put('/api/messages/read', async (req, res) => {
     const { userId, friendId } = req.body
     
     await db.read()
+    const uid2 = parseInt(userId)
+    const fid3 = parseInt(friendId)
     db.data.messages.forEach(m => {
-      if (m.senderId == friendId && m.receiverId == userId) {
+      if (m.senderId === fid3 && m.receiverId === uid2) {
         m.read = true
       }
     })
@@ -1936,7 +2018,7 @@ app.get('/api/transactions', async (req, res) => {
     }
     
     await db.read()
-    const orders = db.data.orders.filter(o => o.userId == userId && (o.status === 'paid' || o.status === 'completed'))
+    const orders = db.data.orders.filter(o => o.userId === parseInt(userId) && (o.status === 'paid' || o.status === 'completed'))
     const transactions = orders.map(o => ({
       id: o.id,
       orderNo: o.orderNo,
@@ -1958,21 +2040,22 @@ app.get('/api/transactions', async (req, res) => {
   }
 })
 
-app.post('/api/feedback', async (req, res) => {
+app.post('/api/feedback', authMiddleware, async (req, res) => {
   try {
-    const { userId, type, content } = req.body
-    
-    if (!userId || !type || !content) {
+    const userId = req.user.id
+    const { type, content } = req.body
+
+    if (!type || !content) {
       return res.status(400).json({ code: 400, message: '请填写完整信息' })
     }
     
     await db.read()
     
-    const user = db.data.users.find(u => u.id == userId)
-    
+    const user = db.data.users.find(u => u.id === userId)
+
     const feedback = {
       id: Date.now(),
-      userId: parseInt(userId),
+      userId,
       username: user?.username || '',
       nickname: user?.nickname || '',
       type,
@@ -2002,7 +2085,7 @@ app.get('/api/feedbacks', async (req, res) => {
     let feedbacks = db.data.feedbacks
     
     if (userId) {
-      feedbacks = feedbacks.filter(f => f.userId == userId)
+      feedbacks = feedbacks.filter(f => f.userId === parseInt(userId))
     }
     
     feedbacks = feedbacks.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
@@ -2098,7 +2181,7 @@ app.post('/api/ai/chat', async (req, res) => {
 
 // ==================== 管理后台统计 API ====================
 
-app.get('/api/admin/overview', async (req, res) => {
+app.get('/api/admin/overview', authMiddleware, async (req, res) => {
   try {
     await db.read()
     const users = db.data.users || []
@@ -2230,7 +2313,7 @@ app.get('/api/admin/products/top', async (req, res) => {
   }
 })
 
-app.get('/api/admin/users', async (req, res) => {
+app.get('/api/admin/users', authMiddleware, async (req, res) => {
   try {
     await db.read()
     const users = (db.data.users || []).map(u => ({
@@ -2249,7 +2332,7 @@ app.get('/api/admin/users', async (req, res) => {
   }
 })
 
-app.delete('/api/admin/user/:id', async (req, res) => {
+app.delete('/api/admin/user/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
     await db.read()
@@ -2264,7 +2347,7 @@ app.delete('/api/admin/user/:id', async (req, res) => {
   }
 })
 
-app.get('/api/admin/orders', async (req, res) => {
+app.get('/api/admin/orders', authMiddleware, async (req, res) => {
   try {
     await db.read()
     const orders = [...(db.data.orders || [])]

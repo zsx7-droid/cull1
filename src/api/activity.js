@@ -46,14 +46,6 @@ export function registerActivity(data) {
   })
 }
 
-export function getRegistrations(activityId) {
-  return request({
-    url: '/registrations',
-    method: 'get',
-    params: { activityId }
-  })
-}
-
 export function getAllRegistrations() {
   return request({
     url: '/registrations',

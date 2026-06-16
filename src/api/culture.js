@@ -22,40 +22,9 @@ export function createCulture(data) {
   })
 }
 
-export function deleteCulture(id, userId) {
+export function deleteCulture(id) {
   return request({
     url: `/culture/${id}`,
-    method: 'delete',
-    params: { userId }
-  })
-}
-
-export function getActivities() {
-  return request({
-    url: '/activities',
-    method: 'get'
-  })
-}
-
-export function getActivityDetail(id) {
-  return request({
-    url: `/activity/${id}`,
-    method: 'get'
-  })
-}
-
-export function createActivity(data) {
-  return request({
-    url: '/activity',
-    method: 'post',
-    data
-  })
-}
-
-export function deleteActivity(id, userId) {
-  return request({
-    url: `/activity/${id}`,
-    method: 'delete',
-    params: { userId }
+    method: 'delete'
   })
 }

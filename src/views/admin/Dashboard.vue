@@ -317,7 +317,7 @@ const loadFeedbacks = async () => {
 const userInfo = computed(() => userStore.userInfo)
 
 const deleteCulture = async (id) => {
-  try { await request.delete(`/culture/${id}?userId=${userInfo.value.id}`); ElMessage.success('删除成功'); loadCultures() } catch(e) {}
+  try { await request.delete(`/culture/${id}`); ElMessage.success('删除成功'); loadCultures() } catch(e) {}
 }
 
 const deleteUser = async (id) => {
@@ -325,18 +325,18 @@ const deleteUser = async (id) => {
 }
 
 const deleteActivity = async (id) => {
-  try { await request.delete(`/activity/${id}?userId=${userInfo.value.id}`); ElMessage.success('删除成功'); loadActivities() } catch(e) {}
+  try { await request.delete(`/activity/${id}`); ElMessage.success('删除成功'); loadActivities() } catch(e) {}
 }
 
 const deletePost = async (id) => {
-  try { await request.delete(`/forum/post/${id}`, { data: { userId: userInfo.value.id } }); ElMessage.success('删除成功'); loadPosts() } catch(e) {}
+  try { await request.delete(`/forum/post/${id}`); ElMessage.success('删除成功'); loadPosts() } catch(e) {}
 }
 
 const submitCulture = async () => {
   if (!cultureForm.value.title || !cultureForm.value.content) { ElMessage.info('请填写完整'); return }
   loading.value = true
   try {
-    await request.post('/culture', { ...cultureForm.value, userId: userInfo.value.id })
+    await request.post('/culture', cultureForm.value)
     ElMessage.success('发布成功')
     cultureForm.value = { title: '', type: 'culture', content: '' }
     activeMenu.value = 'culture-list'
