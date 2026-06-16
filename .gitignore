@@ -32,10 +32,6 @@ dist-ssr
 build
 .cache
 
-# Java build output
-admin/target
-server-spring/target
-
 # Uploaded files
 server/uploads/*.png
 server/uploads/*.jpg

@@ -75,7 +75,7 @@ import { useRouter } from 'vue-router'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { ElMessage } from 'element-plus'
-import { createActivity } from '@/api/culture'
+import { createActivity } from '@/api/activity'
 
 const router = useRouter()
 

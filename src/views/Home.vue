@@ -172,7 +172,7 @@ import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { getCultures } from '@/api/culture'
 import { getProducts } from '@/api/shop'
-import { getActivities } from '@/api/culture'
+import { getActivityList as getActivities } from '@/api/activity'
 
 const router = useRouter()
 
